@@ -74,6 +74,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Compute lowercase image repository
+        id: repo
+        run: echo "name=${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+
       - uses: docker/setup-buildx-action@v3
 
       - name: Log in to GHCR
@@ -90,7 +94,7 @@ jobs:
           file: docker/Dockerfile.${{ matrix.image }}
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}-${{ matrix.image }}:latest
-            ghcr.io/${{ github.repository }}-${{ matrix.image }}:${{ github.sha }}
+            ghcr.io/${{ steps.repo.outputs.name }}-${{ matrix.image }}:latest
+            ghcr.io/${{ steps.repo.outputs.name }}-${{ matrix.image }}:${{ github.sha }}
           cache-from: type=gha,scope=${{ matrix.image }}
           cache-to: type=gha,mode=max,scope=${{ matrix.image }}
