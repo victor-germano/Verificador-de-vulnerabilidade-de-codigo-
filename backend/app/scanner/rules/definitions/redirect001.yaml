@@ -1,0 +1,31 @@
+id: REDIRECT001
+name: Open Redirect
+description: >
+  Um redirecionamento HTTP (`redirect(...)`) é feito para uma URL obtida
+  diretamente de um parâmetro de requisição, sem validar se o destino
+  pertence a uma lista de permissão, permitindo phishing via URLs
+  aparentemente confiáveis.
+category: Open Redirect
+owasp: "A01:2021 - Broken Access Control"
+cwe: CWE-601
+cvss: 6.1
+severity: medium
+confidence: medium
+languages: [python]
+message: >
+  Redirecionamento para uma URL vinda diretamente da requisição, sem
+  validação de destino - risco de open redirect.
+recommendation: >
+  Valide o destino contra uma lista de permissão de caminhos/hosts internos,
+  ou aceite apenas caminhos relativos (`/algo`) e rejeite URLs absolutas com
+  outro host.
+vulnerable_example: |
+  target = request.args.get("next")
+  return redirect(target)
+secure_example: |
+  target = request.args.get("next", "/")
+  if not is_safe_redirect_target(target):
+      target = "/"
+  return redirect(target)
+references:
+  - "https://cwe.mitre.org/data/definitions/601.html"

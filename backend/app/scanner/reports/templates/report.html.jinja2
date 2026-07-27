@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>Relatório de Segurança - {{ context.project_name }}</title>
+<style>
+  body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; color: #1a1a2e; margin: 2rem; }
+  h1 { font-size: 1.6rem; margin-bottom: 0.2rem; }
+  .meta { color: #555; font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .score { font-size: 2.2rem; font-weight: 700; }
+  .summary { display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .summary .card { border: 1px solid #ddd; border-radius: 8px; padding: 0.75rem 1rem; min-width: 110px; }
+  .card .count { font-size: 1.4rem; font-weight: 700; }
+  .critical { color: #b91c1c; } .high { color: #c2410c; } .medium { color: #b45309; }
+  .low { color: #0369a1; } .info { color: #475569; }
+  .finding { border: 1px solid #e2e2e2; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; page-break-inside: avoid; }
+  .finding h3 { margin: 0 0 0.5rem 0; }
+  .badge { display: inline-block; border-radius: 4px; padding: 0.1rem 0.5rem; font-size: 0.75rem; font-weight: 700; color: #fff; margin-right: 0.4rem; }
+  .badge.critical { background: #b91c1c; } .badge.high { background: #c2410c; }
+  .badge.medium { background: #b45309; } .badge.low { background: #0369a1; } .badge.info { background: #475569; }
+  pre { background: #0f172a; color: #e2e8f0; padding: 0.75rem; border-radius: 6px; overflow-x: auto; font-size: 0.8rem; }
+  .field-label { font-weight: 700; margin-top: 0.5rem; }
+  table.meta-table { font-size: 0.85rem; border-collapse: collapse; margin-bottom: 0.5rem; }
+  table.meta-table td { padding: 2px 8px 2px 0; color: #333; }
+</style>
+</head>
+<body>
+  <h1>Relatório de Segurança</h1>
+  <div class="meta">
+    Projeto: <strong>{{ context.project_name }}</strong> &middot;
+    Scan: {{ context.scan_id }} &middot;
+    Gerado em {{ context.generated_at.isoformat() }}
+  </div>
+
+  <div class="summary">
+    <div class="card"><div>Security Score</div><div class="score">{{ context.security_score }}/100</div></div>
+    <div class="card"><div>Arquivos analisados</div><div class="count">{{ context.files_scanned }}</div></div>
+    <div class="card"><div>Total de vulnerabilidades</div><div class="count">{{ context.findings|length }}</div></div>
+    {% for severity, count in context.severity_counts.items() %}
+    <div class="card"><div class="{{ severity }}">{{ severity|capitalize }}</div><div class="count {{ severity }}">{{ count }}</div></div>
+    {% endfor %}
+  </div>
+
+  <h2>Vulnerabilidades encontradas</h2>
+  {% for finding in context.findings %}
+  <div class="finding">
+    <h3><span class="badge {{ finding.severity.value }}">{{ finding.severity.value|upper }}</span>{{ finding.rule_name }} ({{ finding.rule_id }})</h3>
+    <table class="meta-table">
+      <tr><td>Arquivo</td><td><code>{{ finding.file_path }}</code> (linhas {{ finding.line_start }}-{{ finding.line_end }})</td></tr>
+      <tr><td>Categoria</td><td>{{ finding.category }}</td></tr>
+      <tr><td>OWASP</td><td>{{ finding.owasp }}</td></tr>
+      <tr><td>CWE</td><td>{{ finding.cwe }}</td></tr>
+      <tr><td>CVSS</td><td>{{ finding.cvss }}</td></tr>
+      <tr><td>Confiança</td><td>{{ finding.confidence.value }}</td></tr>
+    </table>
+    <div class="field-label">Trecho de código</div>
+    <pre>{{ finding.code_snippet }}</pre>
+    <div class="field-label">Descrição</div><div>{{ finding.description }}</div>
+    <div class="field-label">Explicação técnica</div><div>{{ finding.explanation }}</div>
+    <div class="field-label">Impacto</div><div>{{ finding.impact }}</div>
+    <div class="field-label">Recomendação</div><div>{{ finding.recommendation }}</div>
+    <div class="field-label">Exemplo seguro</div>
+    <pre>{{ finding.secure_example }}</pre>
+    {% if finding.references %}
+    <div class="field-label">Referências</div>
+    <ul>{% for ref in finding.references %}<li>{{ ref }}</li>{% endfor %}</ul>
+    {% endif %}
+  </div>
+  {% endfor %}
+</body>
+</html>

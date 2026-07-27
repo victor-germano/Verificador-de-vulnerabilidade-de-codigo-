@@ -1,0 +1,27 @@
+id: COOKIE001
+name: Insecure Cookie
+description: >
+  Um cookie é definido (`response.set_cookie`) sem as flags `secure` e/ou
+  `httponly`, permitindo que ele trafegue em texto claro sobre HTTP e/ou
+  seja lido por JavaScript malicioso (facilitando roubo de sessão via XSS).
+category: Insecure Cookie
+owasp: "A05:2021 - Security Misconfiguration"
+cwe: CWE-614
+cvss: 5.3
+severity: medium
+confidence: medium
+languages: [python]
+message: >
+  Cookie definido sem `secure=True` e/ou `httponly=True`.
+recommendation: >
+  Defina sempre `secure=True`, `httponly=True` e `samesite="Lax"` (ou
+  `"Strict"`) ao criar cookies de sessão ou que carreguem dados sensíveis.
+vulnerable_example: |
+  response.set_cookie("session_id", token)
+secure_example: |
+  response.set_cookie(
+      "session_id", token, secure=True, httponly=True, samesite="Lax"
+  )
+references:
+  - "https://cwe.mitre.org/data/definitions/614.html"
+  - "https://owasp.org/www-community/controls/SecureCookieAttribute"

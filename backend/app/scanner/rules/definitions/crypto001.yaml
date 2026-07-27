@@ -1,0 +1,26 @@
+id: CRYPTO001
+name: Weak Hashing Algorithm (MD5/SHA1)
+description: >
+  Uso de `hashlib.md5()` ou `hashlib.sha1()`. Ambos os algoritmos têm
+  colisões conhecidas e são considerados criptograficamente quebrados para
+  uso em senhas, assinaturas ou verificação de integridade de segurança.
+category: Weak Cryptography
+owasp: "A02:2021 - Cryptographic Failures"
+cwe: CWE-327
+cvss: 5.9
+severity: medium
+confidence: high
+languages: [python]
+message: >
+  Algoritmo de hash criptograficamente fraco (MD5/SHA1) em uso.
+recommendation: >
+  Para hash de senhas, use um algoritmo com custo ajustável como `bcrypt`,
+  `scrypt` ou `argon2`. Para integridade/checksums não relacionados a senha,
+  use SHA-256 ou superior (`hashlib.sha256`).
+vulnerable_example: |
+  digest = hashlib.md5(password.encode()).hexdigest()
+secure_example: |
+  from passlib.hash import bcrypt
+  digest = bcrypt.hash(password)
+references:
+  - "https://cwe.mitre.org/data/definitions/327.html"

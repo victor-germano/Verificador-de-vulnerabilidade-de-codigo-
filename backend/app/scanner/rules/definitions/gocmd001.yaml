@@ -1,0 +1,28 @@
+id: GOCMD001
+name: Command Injection (Go os/exec)
+description: >
+  `exec.Command(...)` é chamado com um ou mais argumentos que não são
+  strings literais constantes, permitindo que um atacante controle o
+  binário executado ou seus argumentos caso o valor venha de entrada não
+  confiável.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-78
+cvss: 9.8
+severity: critical
+confidence: medium
+languages: [go]
+message: >
+  `exec.Command` chamado com argumento(s) não constante(s) - risco de
+  injeção de comandos do sistema operacional.
+recommendation: >
+  Valide/normalize qualquer entrada externa contra uma lista de permissão
+  antes de usá-la como nome de binário ou argumento; nunca monte o comando
+  invocando um shell (`sh -c`) com uma string concatenada.
+vulnerable_example: |
+  exec.Command("sh", "-c", cmd)
+secure_example: |
+  exec.Command("ping", "-c", "1", host)
+references:
+  - "https://owasp.org/www-community/attacks/Command_Injection"
+  - "https://cwe.mitre.org/data/definitions/78.html"

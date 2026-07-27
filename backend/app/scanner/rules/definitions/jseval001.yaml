@@ -1,0 +1,28 @@
+id: JSEVAL001
+name: Unsafe Eval (JavaScript/TypeScript)
+description: >
+  Chamada a `eval()`, `new Function(...)` ou `setTimeout`/`setInterval` com
+  uma string como primeiro argumento, executando código arbitrário em tempo
+  de execução.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-95
+cvss: 8.1
+severity: high
+confidence: high
+languages: [javascript, typescript]
+message: >
+  Uso de `eval`/`new Function`/`setTimeout` com string - execução de código
+  arbitrário.
+recommendation: >
+  Nunca execute strings como código. Substitua por chamadas de função diretas,
+  `JSON.parse` para dados, e `setTimeout(fn, delay)` com uma referência de
+  função em vez de uma string.
+vulnerable_example: |
+  eval(userInput);
+  setTimeout("doSomething()", 1000);
+secure_example: |
+  doSomething();
+  setTimeout(doSomething, 1000);
+references:
+  - "https://cwe.mitre.org/data/definitions/95.html"

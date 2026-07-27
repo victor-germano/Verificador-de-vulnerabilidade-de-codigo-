@@ -1,0 +1,29 @@
+id: LDAP001
+name: LDAP Injection
+description: >
+  Um filtro de busca LDAP (`connection.search`/`search_s`) é construído por
+  concatenação ou f-string com uma variável, sem escapar caracteres
+  especiais de filtro LDAP (`( ) * \ NUL`), permitindo que um atacante
+  altere a lógica do filtro.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-90
+cvss: 8.6
+severity: high
+confidence: low
+languages: [python]
+message: >
+  Filtro de busca LDAP construído dinamicamente sem escaping - risco de
+  injeção LDAP.
+recommendation: >
+  Escape os valores inseridos no filtro (ex.: `ldap3.utils.conv.escape_filter_chars`)
+  antes de interpolá-los, ou construa o filtro programaticamente em vez de
+  por concatenação de strings.
+vulnerable_example: |
+  conn.search(base_dn, f"(uid={username})", attributes=["cn"])
+secure_example: |
+  from ldap3.utils.conv import escape_filter_chars
+  conn.search(base_dn, f"(uid={escape_filter_chars(username)})", attributes=["cn"])
+references:
+  - "https://cwe.mitre.org/data/definitions/90.html"
+  - "https://owasp.org/www-community/attacks/LDAP_Injection"

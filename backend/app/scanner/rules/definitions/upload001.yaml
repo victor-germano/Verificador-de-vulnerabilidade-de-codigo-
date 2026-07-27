@@ -1,0 +1,28 @@
+id: UPLOAD001
+name: Unsafe File Upload
+description: >
+  Um arquivo enviado pelo usuário é salvo usando seu nome original
+  (`file.filename`) sem sanitização, permitindo path traversal no nome do
+  arquivo (`../../etc/cron.d/x`) ou sobrescrita de arquivos do sistema.
+category: Unsafe File Upload
+owasp: "A04:2021 - Insecure Design"
+cwe: CWE-434
+cvss: 8.1
+severity: high
+confidence: medium
+languages: [python]
+message: >
+  Arquivo salvo com o nome original enviado pelo cliente, sem sanitização -
+  risco de path traversal e upload de arquivo malicioso.
+recommendation: >
+  Sanitize o nome do arquivo com `werkzeug.utils.secure_filename` (ou
+  equivalente) antes de salvar, valide a extensão contra uma lista de
+  permissão e salve em um diretório dedicado sem permissão de execução.
+vulnerable_example: |
+  file.save(os.path.join(UPLOAD_DIR, file.filename))
+secure_example: |
+  from werkzeug.utils import secure_filename
+  file.save(os.path.join(UPLOAD_DIR, secure_filename(file.filename)))
+references:
+  - "https://cwe.mitre.org/data/definitions/434.html"
+  - "https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload"

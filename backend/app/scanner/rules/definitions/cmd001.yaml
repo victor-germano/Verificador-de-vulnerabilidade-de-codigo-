@@ -1,0 +1,28 @@
+id: CMD001
+name: Command Injection
+description: >
+  Execução de comandos do sistema operacional com `shell=True` (ou
+  equivalente) usando uma string construída a partir de entrada externa,
+  permitindo que um atacante injete comandos arbitrários.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-78
+cvss: 9.8
+severity: critical
+confidence: medium
+languages: [python]
+message: >
+  Comando de shell construído dinamicamente e executado com `shell=True`,
+  permitindo injeção de comandos do sistema operacional.
+recommendation: >
+  Evite `shell=True`. Passe o comando e seus argumentos como lista para
+  `subprocess.run`/`Popen` (sem shell), e valide/normalize qualquer entrada
+  externa antes de usá-la como argumento.
+vulnerable_example: |
+  os.system("ping " + host)
+  subprocess.run(f"ping {host}", shell=True)
+secure_example: |
+  subprocess.run(["ping", "-c", "1", host], shell=False)
+references:
+  - "https://owasp.org/www-community/attacks/Command_Injection"
+  - "https://cwe.mitre.org/data/definitions/78.html"

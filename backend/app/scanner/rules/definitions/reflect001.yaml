@@ -1,0 +1,30 @@
+id: REFLECT001
+name: Unsafe Reflection
+description: >
+  Um nome de atributo/método obtido dinamicamente (`getattr(obj, name)`,
+  sem valor padrão) é imediatamente chamado como função, onde `name` não é
+  uma constante. Se `name` for influenciável por um atacante, ele pode
+  invocar qualquer método do objeto, incluindo métodos internos/perigosos
+  não pretendidos para exposição.
+category: Unsafe Reflection
+owasp: "A03:2021 - Injection"
+cwe: CWE-470
+cvss: 8.1
+severity: high
+confidence: low
+languages: [python]
+message: >
+  Chamada de método resolvida dinamicamente via `getattr` com nome não
+  constante - risco de invocação de método não pretendido (reflexão insegura).
+recommendation: >
+  Use um dicionário de despacho explícito (`{"add": add_fn, "sub": sub_fn}[name]`)
+  com uma lista de permissão fechada de operações válidas, em vez de
+  `getattr` sobre um nome vindo de entrada externa.
+vulnerable_example: |
+  action = request.args.get("action")
+  getattr(handler, action)()
+secure_example: |
+  ALLOWED = {"list": handler.list, "create": handler.create}
+  ALLOWED[request.args.get("action")]()
+references:
+  - "https://cwe.mitre.org/data/definitions/470.html"

@@ -1,0 +1,28 @@
+id: JSCMD001
+name: Command Injection (Node.js child_process)
+description: >
+  `child_process.exec`/`execSync` é chamado com um comando que não é uma
+  string literal constante (template string, concatenação ou variável),
+  passando pelo shell do sistema operacional e permitindo injeção de
+  comandos caso o valor venha de entrada não confiável.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-78
+cvss: 9.8
+severity: critical
+confidence: medium
+languages: [javascript, typescript]
+message: >
+  `exec`/`execSync` chamado com um comando construído dinamicamente -
+  execução via shell permite injeção de comandos.
+recommendation: >
+  Prefira `execFile`/`execFileSync` (não passa pelo shell) com os
+  argumentos como um array separado, em vez de montar uma única string de
+  comando.
+vulnerable_example: |
+  exec(`ping ${host}`);
+secure_example: |
+  execFile("ping", ["-c", "1", host]);
+references:
+  - "https://owasp.org/www-community/attacks/Command_Injection"
+  - "https://cwe.mitre.org/data/definitions/78.html"

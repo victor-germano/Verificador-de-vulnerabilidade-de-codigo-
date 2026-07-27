@@ -1,0 +1,29 @@
+id: CSHARPCMD001
+name: Command Injection (C# Process.Start)
+description: >
+  `Process.Start(...)` é chamado com um argumento que não é uma string
+  literal constante, permitindo que um atacante controle o processo/
+  argumentos executados caso o valor venha de entrada não confiável.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-78
+cvss: 9.8
+severity: critical
+confidence: medium
+languages: [csharp]
+message: >
+  `Process.Start` chamado com argumento(s) não constante(s) - risco de
+  injeção de comandos do sistema operacional.
+recommendation: >
+  Valide/normalize a entrada contra uma lista de permissão antes de
+  utilizá-la, e prefira `ProcessStartInfo` com `ArgumentList` (argumentos
+  separados) em vez de uma única string concatenada.
+vulnerable_example: |
+  Process.Start("ping", host);
+secure_example: |
+  var psi = new ProcessStartInfo("ping");
+  psi.ArgumentList.Add(host);
+  Process.Start(psi);
+references:
+  - "https://owasp.org/www-community/attacks/Command_Injection"
+  - "https://cwe.mitre.org/data/definitions/78.html"

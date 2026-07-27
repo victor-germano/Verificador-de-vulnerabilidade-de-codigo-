@@ -1,0 +1,27 @@
+id: CODE001
+name: Unsafe Eval / Code Injection
+description: >
+  Uso de `eval()` ou `exec()` sobre uma string que não é uma constante
+  literal, permitindo execução arbitrária de código Python caso a entrada
+  seja influenciável por um atacante.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-95
+cvss: 9.1
+severity: critical
+confidence: medium
+languages: [python]
+message: >
+  `eval`/`exec` está sendo chamado com uma expressão não literal, o que pode
+  permitir execução arbitrária de código.
+recommendation: >
+  Evite `eval`/`exec` por completo. Se for indispensável, use `ast.literal_eval`
+  para dados estruturados simples, ou substitua por um parser/dispatcher
+  explícito (ex.: dicionário de funções permitidas).
+vulnerable_example: |
+  result = eval(user_input)
+secure_example: |
+  import ast
+  result = ast.literal_eval(user_input)
+references:
+  - "https://cwe.mitre.org/data/definitions/95.html"

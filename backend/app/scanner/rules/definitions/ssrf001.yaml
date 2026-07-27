@@ -1,0 +1,30 @@
+id: SSRF001
+name: Server-Side Request Forgery (SSRF)
+description: >
+  Uma requisição HTTP de saída (`requests`, `httpx`, `urllib`) é feita para
+  uma URL construída a partir de uma variável não constante, sem lista de
+  permissão de destinos, permitindo que um atacante force o servidor a
+  acessar recursos internos.
+category: SSRF
+owasp: "A10:2021 - Server-Side Request Forgery"
+cwe: CWE-918
+cvss: 8.6
+severity: high
+confidence: low
+languages: [python]
+message: >
+  URL de requisição HTTP não é uma constante literal, permitindo potencial
+  SSRF se o valor for influenciável por um atacante.
+recommendation: >
+  Valide a URL contra uma lista de permissão de hosts/esquemas, resolva o DNS
+  e bloqueie ranges de IP internos (RFC1918, link-local, metadata endpoints)
+  antes de realizar a requisição.
+vulnerable_example: |
+  resp = requests.get(url)
+secure_example: |
+  if not is_allowed_host(url):
+      raise ValueError("host not allowed")
+  resp = requests.get(url, timeout=5)
+references:
+  - "https://owasp.org/Top10/A10_2021-Server-Side_Request_Forgery_%28SSRF%29/"
+  - "https://cwe.mitre.org/data/definitions/918.html"

@@ -1,0 +1,16 @@
+**/node_modules
+**/.venv
+**/__pycache__
+**/*.pyc
+**/dist
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache
+**/htmlcov
+**/.coverage
+**/uploads
+**/reports_output
+**/.git
+**/.env
+**/*.db
+**/*.sqlite3

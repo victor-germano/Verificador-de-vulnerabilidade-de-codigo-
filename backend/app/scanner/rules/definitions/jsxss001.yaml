@@ -1,0 +1,27 @@
+id: JSXSS001
+name: DOM-based XSS via innerHTML
+description: >
+  Atribuição a `element.innerHTML` (ou `outerHTML`/`document.write`) com um
+  valor que não é uma string literal constante, permitindo injeção de
+  HTML/JavaScript no DOM caso o valor venha de entrada não confiável.
+category: Cross-Site Scripting
+owasp: "A03:2021 - Injection"
+cwe: CWE-79
+cvss: 6.1
+severity: medium
+confidence: low
+languages: [javascript, typescript]
+message: >
+  Atribuição dinâmica a `innerHTML`/`document.write` - risco de XSS baseado
+  em DOM.
+recommendation: >
+  Prefira `textContent` para texto puro. Se HTML é realmente necessário,
+  sanitize com uma biblioteca como DOMPurify antes de atribuir a `innerHTML`.
+vulnerable_example: |
+  element.innerHTML = userComment;
+secure_example: |
+  import DOMPurify from "dompurify";
+  element.innerHTML = DOMPurify.sanitize(userComment);
+references:
+  - "https://owasp.org/www-community/attacks/DOM_Based_XSS"
+  - "https://cwe.mitre.org/data/definitions/79.html"

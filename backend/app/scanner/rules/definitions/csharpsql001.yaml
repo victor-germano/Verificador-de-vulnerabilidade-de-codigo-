@@ -1,0 +1,27 @@
+id: CSHARPSQL001
+name: SQL Injection (C# SqlCommand)
+description: >
+  Um `SqlCommand` é criado com o texto do comando construído por
+  concatenação de strings (`+`) em vez de parâmetros vinculados, permitindo
+  que um atacante altere a lógica da consulta.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-89
+cvss: 9.8
+severity: critical
+confidence: medium
+languages: [csharp]
+message: >
+  `SqlCommand` construído com texto de comando concatenado - use parâmetros
+  vinculados (`SqlParameter`).
+recommendation: >
+  Use `SqlCommand` com placeholders (`@id`) e `Parameters.AddWithValue`/
+  `Parameters.Add` em vez de concatenar valores na string do comando.
+vulnerable_example: |
+  var cmd = new SqlCommand("SELECT * FROM users WHERE id = " + id, conn);
+secure_example: |
+  var cmd = new SqlCommand("SELECT * FROM users WHERE id = @id", conn);
+  cmd.Parameters.AddWithValue("@id", id);
+references:
+  - "https://owasp.org/Top10/A03_2021-Injection/"
+  - "https://cwe.mitre.org/data/definitions/89.html"

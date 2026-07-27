@@ -1,0 +1,24 @@
+id: CRYPTO002
+name: Weak Cipher (DES / ECB Mode)
+description: >
+  Uso do algoritmo de cifra DES (chave curta, quebrável por força bruta) ou
+  do modo de operação ECB (que vaza padrões do texto claro por cifrar cada
+  bloco de forma independente e idêntica).
+category: Weak Cryptography
+owasp: "A02:2021 - Cryptographic Failures"
+cwe: CWE-327
+cvss: 7.5
+severity: high
+confidence: medium
+languages: [python, javascript, typescript, java, php, go, rust, csharp]
+message: >
+  Cifra fraca (DES) ou modo de operação inseguro (ECB) em uso.
+recommendation: >
+  Use AES-256 com um modo autenticado como GCM. Nunca use ECB - prefira
+  GCM ou CBC com um IV aleatório e autenticação (HMAC ou AEAD).
+vulnerable_example: |
+  cipher = DES.new(key, DES.MODE_ECB)
+secure_example: |
+  cipher = AES.new(key, AES.MODE_GCM)
+references:
+  - "https://cwe.mitre.org/data/definitions/327.html"

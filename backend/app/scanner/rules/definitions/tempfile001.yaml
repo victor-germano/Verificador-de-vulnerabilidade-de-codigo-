@@ -1,0 +1,30 @@
+id: TEMPFILE001
+name: Insecure Temporary File
+description: >
+  Uso de `tempfile.mktemp()`, que apenas devolve um nome de arquivo
+  supostamente único sem criá-lo - entre a geração do nome e o uso, outro
+  processo pode criar um arquivo/link com o mesmo nome (race condition,
+  CWE-377), potencialmente controlado por um atacante local.
+category: Insecure Temporary Files
+owasp: "A01:2021 - Broken Access Control"
+cwe: CWE-377
+cvss: 5.9
+severity: medium
+confidence: high
+languages: [python]
+message: >
+  `tempfile.mktemp()` é inerentemente inseguro (race condition entre gerar
+  o nome e criar o arquivo).
+recommendation: >
+  Use `tempfile.NamedTemporaryFile`, `tempfile.mkstemp` ou
+  `tempfile.TemporaryDirectory`, que criam o arquivo/diretório de forma
+  atômica.
+vulnerable_example: |
+  path = tempfile.mktemp()
+  with open(path, "w") as f:
+      f.write(data)
+secure_example: |
+  with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
+      f.write(data)
+references:
+  - "https://cwe.mitre.org/data/definitions/377.html"

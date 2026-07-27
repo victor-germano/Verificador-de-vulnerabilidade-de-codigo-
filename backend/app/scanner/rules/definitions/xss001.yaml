@@ -1,0 +1,31 @@
+id: XSS001
+name: Reflected Cross-Site Scripting
+description: >
+  Um valor obtido diretamente de uma requisição (`request.args`,
+  `request.form`, `request.values`, ...) é usado em `render_template_string`
+  ou devolvido diretamente na resposta HTTP sem escaping, permitindo que um
+  atacante injete HTML/JavaScript refletido na página.
+category: Cross-Site Scripting
+owasp: "A03:2021 - Injection"
+cwe: CWE-79
+cvss: 6.1
+severity: medium
+confidence: low
+languages: [python]
+message: >
+  Entrada de requisição usada em template renderizado dinamicamente ou
+  devolvida diretamente na resposta, sem sanitização - risco de XSS refletido.
+recommendation: >
+  Nunca use `render_template_string` com entrada do usuário. Use templates
+  estáticos com autoescaping (Jinja2 já escapa por padrão em
+  `render_template`) e valide/sanitize qualquer conteúdo HTML gerado
+  dinamicamente.
+vulnerable_example: |
+  name = request.args.get("name")
+  return render_template_string(f"<h1>Hello {name}</h1>")
+secure_example: |
+  name = request.args.get("name", "")
+  return render_template("greeting.html", name=name)
+references:
+  - "https://owasp.org/www-community/attacks/xss/"
+  - "https://cwe.mitre.org/data/definitions/79.html"

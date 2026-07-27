@@ -1,0 +1,27 @@
+id: RUSTCMD001
+name: Command Injection (Rust std::process::Command)
+description: >
+  `Command::new(...)` é chamado com um argumento que não é uma string
+  literal constante, permitindo que um atacante controle o binário
+  executado caso o valor venha de entrada não confiável.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-78
+cvss: 9.8
+severity: critical
+confidence: medium
+languages: [rust]
+message: >
+  `Command::new` chamado com um valor não constante - risco de injeção de
+  comandos do sistema operacional.
+recommendation: >
+  Valide/normalize a entrada contra uma lista de permissão de binários
+  antes de usá-la em `Command::new`, e prefira `.arg(...)` (argumentos
+  separados) em vez de montar uma única string de shell.
+vulnerable_example: |
+  Command::new(cmd).spawn()
+secure_example: |
+  Command::new("ping").arg("-c").arg("1").arg(host).spawn()
+references:
+  - "https://owasp.org/www-community/attacks/Command_Injection"
+  - "https://cwe.mitre.org/data/definitions/78.html"

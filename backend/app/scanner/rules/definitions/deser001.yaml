@@ -1,0 +1,28 @@
+id: DESER001
+name: Insecure Deserialization
+description: >
+  Desserialização de dados não confiáveis usando `pickle.load(s)`,
+  `marshal.load(s)` ou `yaml.load` sem `SafeLoader`. Esses formatos podem
+  instanciar objetos arbitrários e executar código durante a desserialização.
+category: Insecure Deserialization
+owasp: "A08:2021 - Software and Data Integrity Failures"
+cwe: CWE-502
+cvss: 9.8
+severity: critical
+confidence: high
+languages: [python]
+message: >
+  Desserialização insegura: `pickle`/`marshal`/`yaml.load` sem loader seguro
+  pode executar código arbitrário a partir de dados não confiáveis.
+recommendation: >
+  Nunca desserialize dados não confiáveis com `pickle`/`marshal`. Para YAML,
+  use `yaml.safe_load`. Prefira formatos de dados puros (JSON) para dados que
+  cruzam fronteiras de confiança.
+vulnerable_example: |
+  data = pickle.loads(payload)
+  config = yaml.load(payload)
+secure_example: |
+  config = yaml.safe_load(payload)
+references:
+  - "https://cwe.mitre.org/data/definitions/502.html"
+  - "https://docs.python.org/3/library/pickle.html#module-pickle"

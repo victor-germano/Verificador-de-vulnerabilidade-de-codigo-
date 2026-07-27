@@ -1,0 +1,28 @@
+id: PHPCMD001
+name: Command Injection (PHP)
+description: >
+  `exec`/`shell_exec`/`system`/`passthru`/`popen`/`proc_open` é chamado com
+  um comando que não é uma string literal constante, permitindo injeção de
+  comandos do sistema operacional caso o valor venha de entrada não
+  confiável.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-78
+cvss: 9.8
+severity: critical
+confidence: medium
+languages: [php]
+message: >
+  Função de execução de shell chamada com um comando não constante - risco
+  de injeção de comandos do sistema operacional.
+recommendation: >
+  Evite passar entrada do usuário para funções de shell. Se for
+  indispensável, use `escapeshellarg`/`escapeshellcmd` em cada argumento, ou
+  prefira uma API específica em vez de invocar o shell.
+vulnerable_example: |
+  system("ping " . $host);
+secure_example: |
+  system("ping " . escapeshellarg($host));
+references:
+  - "https://owasp.org/www-community/attacks/Command_Injection"
+  - "https://cwe.mitre.org/data/definitions/78.html"

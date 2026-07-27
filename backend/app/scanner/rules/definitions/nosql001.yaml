@@ -1,0 +1,28 @@
+id: NOSQL001
+name: NoSQL Injection
+description: >
+  Uma consulta MongoDB usa o operador `$where` (que executa JavaScript
+  arbitrário no servidor) com uma string construída dinamicamente, ou um
+  filtro é montado por concatenação a partir de entrada externa, permitindo
+  que um atacante altere a lógica da consulta ou execute código no banco.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-943
+cvss: 9.1
+severity: critical
+confidence: medium
+languages: [python]
+message: >
+  Uso de `$where` com JavaScript construído dinamicamente em uma consulta
+  MongoDB - permite injeção de operadores/código no banco de dados.
+recommendation: >
+  Evite `$where`. Use os operadores de consulta nativos do MongoDB
+  (`$eq`, `$gt`, `$in`, ...) com valores passados como parâmetros, nunca
+  interpolados em uma string de código.
+vulnerable_example: |
+  collection.find({"$where": f"this.name == '{name}'"})
+secure_example: |
+  collection.find({"name": name})
+references:
+  - "https://cwe.mitre.org/data/definitions/943.html"
+  - "https://owasp.org/www-community/Injection_Flaws"

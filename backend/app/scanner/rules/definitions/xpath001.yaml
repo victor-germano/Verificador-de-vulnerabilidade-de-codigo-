@@ -1,0 +1,25 @@
+id: XPATH001
+name: XPath Injection
+description: >
+  Uma expressão XPath (`.xpath(...)`) é avaliada a partir de uma string
+  construída dinamicamente, permitindo que um atacante altere a navegação
+  do documento XML e acesse nós fora do escopo pretendido.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-643
+cvss: 7.5
+severity: high
+confidence: low
+languages: [python]
+message: >
+  Expressão XPath construída dinamicamente - risco de injeção XPath.
+recommendation: >
+  Use variáveis de expressão XPath (parâmetros vinculados, quando a
+  biblioteca suportar) em vez de interpolar valores diretamente na
+  expressão, ou valide rigorosamente o valor contra uma lista de permissão.
+vulnerable_example: |
+  nodes = tree.xpath(f"//user[name='{username}']")
+secure_example: |
+  nodes = tree.xpath("//user[name=$name]", name=username)
+references:
+  - "https://cwe.mitre.org/data/definitions/643.html"

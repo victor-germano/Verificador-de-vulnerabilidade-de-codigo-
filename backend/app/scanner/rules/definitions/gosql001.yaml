@@ -1,0 +1,28 @@
+id: GOSQL001
+name: SQL Injection (Go database/sql)
+description: >
+  `Query`/`Exec`/`QueryRow` (e variantes `*Context`) de `database/sql` é
+  chamado com uma consulta construída por concatenação de strings (`+`) em
+  vez de placeholders vinculados, permitindo que um atacante altere a
+  lógica da consulta.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-89
+cvss: 9.8
+severity: critical
+confidence: medium
+languages: [go]
+message: >
+  Consulta SQL montada por concatenação de strings e executada via
+  `Query`/`Exec` - use placeholders vinculados (`?`/`$1`).
+recommendation: >
+  Passe os valores como argumentos adicionais de `Query`/`Exec` com
+  placeholders (`?` para MySQL/SQLite, `$1` para Postgres) em vez de
+  concatenar a consulta.
+vulnerable_example: |
+  db.Query("SELECT * FROM users WHERE id = " + id)
+secure_example: |
+  db.Query("SELECT * FROM users WHERE id = ?", id)
+references:
+  - "https://owasp.org/Top10/A03_2021-Injection/"
+  - "https://cwe.mitre.org/data/definitions/89.html"

@@ -1,0 +1,30 @@
+id: FILEINC001
+name: Unsafe Dynamic Import (File Inclusion)
+description: >
+  Um módulo é importado dinamicamente (`importlib.import_module`,
+  `__import__`) usando um nome não constante, análogo a uma vulnerabilidade
+  de Local/Remote File Inclusion: se o nome do módulo for influenciável por
+  um atacante, código arbitrário instalado no `sys.path` (ou um pacote
+  malicioso) pode ser executado no import.
+category: File Inclusion
+owasp: "A03:2021 - Injection"
+cwe: CWE-98
+cvss: 8.6
+severity: high
+confidence: low
+languages: [python]
+message: >
+  Import dinâmico de módulo a partir de um nome não constante - risco
+  análogo a inclusão de arquivo remoto/local.
+recommendation: >
+  Restrinja o nome do módulo a uma lista de permissão fechada antes de
+  importar, ou substitua o import dinâmico por um dicionário de despacho
+  explícito de módulos permitidos.
+vulnerable_example: |
+  plugin_name = request.args.get("plugin")
+  module = importlib.import_module(plugin_name)
+secure_example: |
+  ALLOWED_PLUGINS = {"pdf": "plugins.pdf", "csv": "plugins.csv"}
+  module = importlib.import_module(ALLOWED_PLUGINS[plugin_name])
+references:
+  - "https://cwe.mitre.org/data/definitions/98.html"

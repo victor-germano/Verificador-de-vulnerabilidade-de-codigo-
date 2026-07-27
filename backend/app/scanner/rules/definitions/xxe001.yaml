@@ -1,0 +1,26 @@
+id: XXE001
+name: XML External Entity (XXE)
+description: >
+  Parsing de XML com `xml.etree.ElementTree`, `xml.sax` ou `xml.dom.minidom`
+  sem desabilitar a resolução de entidades externas, permitindo leitura de
+  arquivos locais ou SSRF através de entidades DTD maliciosas.
+category: XML External Entity
+owasp: "A05:2021 - Security Misconfiguration"
+cwe: CWE-611
+cvss: 8.2
+severity: high
+confidence: low
+languages: [python]
+message: >
+  Parser XML padrão usado sem proteção contra entidades externas (XXE).
+recommendation: >
+  Use `defusedxml` no lugar dos módulos `xml.*` padrão, ou desabilite
+  explicitamente `resolve_entities` e DTDs externas no parser utilizado.
+vulnerable_example: |
+  tree = xml.etree.ElementTree.parse(untrusted_file)
+secure_example: |
+  from defusedxml.ElementTree import parse
+  tree = parse(untrusted_file)
+references:
+  - "https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing"
+  - "https://cwe.mitre.org/data/definitions/611.html"

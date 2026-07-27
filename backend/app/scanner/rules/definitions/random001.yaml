@@ -1,0 +1,27 @@
+id: RANDOM001
+name: Weak Random for Security-Sensitive Value
+description: >
+  O módulo `random` (não seguro para criptografia, baseado em Mersenne
+  Twister e previsível) é usado para gerar um valor cujo nome sugere uso em
+  contexto de segurança (senha, token, chave, secret).
+category: Weak Cryptography
+owasp: "A02:2021 - Cryptographic Failures"
+cwe: CWE-338
+cvss: 7.5
+severity: high
+confidence: low
+languages: [python]
+message: >
+  Gerador de números pseudoaleatórios não seguro (`random`) usado para gerar
+  um valor sensível - previsível por um atacante.
+recommendation: >
+  Use o módulo `secrets` (`secrets.token_urlsafe`, `secrets.token_hex`) ou
+  `os.urandom` para qualquer valor com finalidade de segurança.
+vulnerable_example: |
+  token = str(random.randint(100000, 999999))
+secure_example: |
+  import secrets
+  token = secrets.token_urlsafe(32)
+references:
+  - "https://cwe.mitre.org/data/definitions/338.html"
+  - "https://docs.python.org/3/library/secrets.html"

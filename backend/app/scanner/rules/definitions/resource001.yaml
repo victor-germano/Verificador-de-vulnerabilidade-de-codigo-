@@ -1,0 +1,28 @@
+id: RESOURCE001
+name: Resource Leak (Unclosed File Handle)
+description: >
+  Um arquivo é aberto com `open(...)` fora de um bloco `with`, sem garantia
+  de que será fechado (inclusive em caminhos de exceção), o que pode
+  esgotar descritores de arquivo do processo sob carga ou uso repetido.
+category: Resource Leak
+owasp: "A05:2021 - Security Misconfiguration"
+cwe: CWE-404
+cvss: 4.3
+severity: low
+confidence: low
+languages: [python]
+message: >
+  Arquivo aberto sem o gerenciador de contexto `with` - o descritor pode
+  vazar se uma exceção ocorrer antes do `close()` explícito.
+recommendation: >
+  Sempre abra arquivos com `with open(...) as f:` para garantir o
+  fechamento automático, mesmo em caso de exceção.
+vulnerable_example: |
+  f = open(path)
+  data = f.read()
+  f.close()
+secure_example: |
+  with open(path) as f:
+      data = f.read()
+references:
+  - "https://cwe.mitre.org/data/definitions/404.html"

@@ -1,0 +1,29 @@
+id: PHPSQL001
+name: SQL Injection (PHP)
+description: >
+  Uma consulta SQL é executada via `mysqli_query`/`mysql_query`/`pg_query`
+  ou `->query()`/`->exec()` de um objeto de conexão, com a query construída
+  por concatenação de strings (`.`) em vez de statements preparados,
+  permitindo que um atacante altere a lógica da consulta.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-89
+cvss: 9.8
+severity: critical
+confidence: medium
+languages: [php]
+message: >
+  Consulta SQL montada por concatenação de strings (`.`) - use statements
+  preparados com parâmetros vinculados.
+recommendation: >
+  Use PDO ou mysqli com statements preparados (`prepare`/`bind_param` ou
+  `? ` placeholders) em vez de concatenar valores diretamente na query.
+vulnerable_example: |
+  mysqli_query($conn, "SELECT * FROM users WHERE id = " . $id);
+secure_example: |
+  $stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
+  $stmt->bind_param("i", $id);
+  $stmt->execute();
+references:
+  - "https://owasp.org/Top10/A03_2021-Injection/"
+  - "https://cwe.mitre.org/data/definitions/89.html"

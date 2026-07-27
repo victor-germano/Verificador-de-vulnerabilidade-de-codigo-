@@ -1,0 +1,28 @@
+id: RUSTSQL001
+name: SQL Injection (Rust format! in query)
+description: >
+  Uma consulta SQL é executada via `.execute(...)`/`.query(...)` com o
+  texto da query construído usando a macro `format!`, permitindo que um
+  atacante altere a lógica da consulta caso um valor interpolado venha de
+  entrada não confiável.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-89
+cvss: 9.8
+severity: critical
+confidence: medium
+languages: [rust]
+message: >
+  Consulta SQL construída com `format!` e executada via `.execute`/`.query`
+  - use parâmetros vinculados em vez de interpolar a query.
+recommendation: >
+  Use os placeholders da biblioteca de banco (`?1`/`$1` com `rusqlite`,
+  `sqlx::query!` com parâmetros tipados) em vez de montar a query com
+  `format!`.
+vulnerable_example: |
+  conn.execute(&format!("SELECT * FROM users WHERE id = {}", id), [])
+secure_example: |
+  conn.execute("SELECT * FROM users WHERE id = ?1", params![id])
+references:
+  - "https://owasp.org/Top10/A03_2021-Injection/"
+  - "https://cwe.mitre.org/data/definitions/89.html"

@@ -1,0 +1,32 @@
+id: PATH001
+name: Path Traversal
+description: >
+  Abertura ou manipulação de arquivos usando um caminho construído por
+  concatenação/f-string com uma variável, sem normalização/validação,
+  permitindo que um atacante acesse arquivos fora do diretório esperado
+  (ex.: `../../etc/passwd`).
+category: Path Traversal
+owasp: "A01:2021 - Broken Access Control"
+cwe: CWE-22
+cvss: 7.5
+severity: high
+confidence: low
+languages: [python]
+message: >
+  Caminho de arquivo montado dinamicamente é usado diretamente em uma
+  operação de arquivo, sem validação contra path traversal.
+recommendation: >
+  Resolva o caminho com `os.path.realpath`/`Path.resolve()` e confirme que o
+  resultado está contido dentro do diretório base permitido antes de abrir o
+  arquivo. Rejeite caminhos contendo `..`.
+vulnerable_example: |
+  path = os.path.join(base_dir, filename)
+  open(path).read()
+secure_example: |
+  safe_path = (base_dir / filename).resolve()
+  if not str(safe_path).startswith(str(base_dir.resolve())):
+      raise ValueError("invalid path")
+  safe_path.open().read()
+references:
+  - "https://owasp.org/www-community/attacks/Path_Traversal"
+  - "https://cwe.mitre.org/data/definitions/22.html"

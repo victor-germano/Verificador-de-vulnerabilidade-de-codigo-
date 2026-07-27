@@ -1,0 +1,26 @@
+id: LOG001
+name: Logging of Sensitive Data (Password / Token)
+description: >
+  Uma chamada de log (`print`, `logging.*`, `console.log`, ...) inclui uma
+  variável cujo nome sugere conter uma senha, token ou segredo, expondo o
+  valor em arquivos de log que podem ter controle de acesso mais fraco que o
+  sistema em si.
+category: Sensitive Data Exposure
+owasp: "A09:2021 - Security Logging and Monitoring Failures"
+cwe: CWE-532
+cvss: 5.3
+severity: medium
+confidence: low
+languages: [python, javascript, typescript, java, php, go, rust, csharp]
+message: >
+  Valor sensível (senha/token/segredo) sendo escrito em log.
+recommendation: >
+  Nunca logue credenciais, tokens ou segredos. Se precisar logar o evento,
+  mascare o valor (ex.: mostre só os últimos 4 caracteres) ou logue apenas
+  metadados (ex.: "login realizado para o usuário X").
+vulnerable_example: |
+  logging.info("login attempt password=%s", password)
+secure_example: |
+  logging.info("login attempt for user_id=%s", user_id)
+references:
+  - "https://cwe.mitre.org/data/definitions/532.html"

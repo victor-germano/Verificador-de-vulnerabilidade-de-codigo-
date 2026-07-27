@@ -1,0 +1,30 @@
+id: JAVASQL001
+name: SQL Injection (Java JDBC)
+description: >
+  Uma consulta SQL é executada via `Statement.executeQuery`/`executeUpdate`/
+  `execute` com um argumento construído por concatenação de strings (`+`)
+  em vez de `PreparedStatement` com parâmetros vinculados, permitindo que um
+  atacante altere a lógica da consulta.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-89
+cvss: 9.8
+severity: critical
+confidence: medium
+languages: [java]
+message: >
+  Consulta SQL montada por concatenação de strings e executada via
+  `Statement` - use `PreparedStatement` com parâmetros vinculados.
+recommendation: >
+  Use `PreparedStatement` com placeholders `?` e `setString`/`setInt`/etc.
+  para vincular os valores, em vez de concatenar a consulta.
+vulnerable_example: |
+  Statement stmt = conn.createStatement();
+  stmt.executeQuery("SELECT * FROM users WHERE id = " + id);
+secure_example: |
+  PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE id = ?");
+  stmt.setString(1, id);
+  stmt.executeQuery();
+references:
+  - "https://owasp.org/Top10/A03_2021-Injection/"
+  - "https://cwe.mitre.org/data/definitions/89.html"

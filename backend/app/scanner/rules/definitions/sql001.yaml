@@ -1,0 +1,29 @@
+id: SQL001
+name: SQL Injection
+description: >
+  Construção de consultas SQL por concatenação ou formatação de strings com
+  dados que podem vir do usuário, em vez de parâmetros vinculados (bind
+  parameters). Permite que um atacante altere a lógica da consulta.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-89
+cvss: 9.8
+severity: critical
+confidence: medium
+languages: [python]
+message: >
+  A consulta SQL é montada por concatenação/f-string/format ao invés de
+  parâmetros vinculados, permitindo injeção de SQL.
+recommendation: >
+  Utilize sempre parâmetros vinculados (placeholders `?`/`%s` com a lista de
+  argumentos separada) fornecidos pelo driver do banco de dados (ex.:
+  psycopg2, sqlite3, SQLAlchemy `text()` com `:param`). Nunca interpole
+  valores diretamente na string SQL.
+vulnerable_example: |
+  query = "SELECT * FROM users WHERE email = '" + email + "'"
+  cursor.execute(query)
+secure_example: |
+  cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+references:
+  - "https://owasp.org/Top10/A03_2021-Injection/"
+  - "https://cwe.mitre.org/data/definitions/89.html"

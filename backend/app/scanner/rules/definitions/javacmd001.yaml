@@ -1,0 +1,28 @@
+id: JAVACMD001
+name: Command Injection (Java Runtime.exec)
+description: >
+  `Runtime.exec(...)` é chamado com um comando que não é uma constante de
+  string literal (variável, concatenação, etc.), passando para o sistema
+  operacional um comando que pode ser manipulado por um atacante caso o
+  valor venha de entrada não confiável.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-78
+cvss: 9.8
+severity: critical
+confidence: medium
+languages: [java]
+message: >
+  `Runtime.exec` chamado com um comando não constante - risco de injeção de
+  comandos do sistema operacional.
+recommendation: >
+  Prefira `ProcessBuilder` com os argumentos do comando como uma lista
+  separada (nunca uma única string montada por concatenação), e valide
+  qualquer entrada externa usada como argumento.
+vulnerable_example: |
+  Runtime.getRuntime().exec(userInput);
+secure_example: |
+  new ProcessBuilder("ping", "-c", "1", host).start();
+references:
+  - "https://owasp.org/www-community/attacks/Command_Injection"
+  - "https://cwe.mitre.org/data/definitions/78.html"

@@ -1,0 +1,31 @@
+id: SSTI001
+name: Server-Side Template Injection
+description: >
+  Um template Jinja2 é compilado a partir de uma string não constante
+  (`Template(...)` ou `Environment().from_string(...)`), permitindo que um
+  atacante injete sintaxe de template e execute código arbitrário no
+  servidor caso o valor venha de entrada não confiável.
+category: Injection
+owasp: "A03:2021 - Injection"
+cwe: CWE-1336
+cvss: 9.8
+severity: critical
+confidence: medium
+languages: [python]
+message: >
+  Template compilado a partir de uma string dinâmica - risco de Server-Side
+  Template Injection (SSTI).
+recommendation: >
+  Nunca compile templates a partir de entrada do usuário. Use templates
+  estáticos carregados de arquivos e passe dados apenas como variáveis de
+  contexto (`template.render(nome=valor)`), nunca como parte do próprio
+  template.
+vulnerable_example: |
+  template = Template(user_input)
+  return template.render()
+secure_example: |
+  template = env.get_template("greeting.html")
+  return template.render(name=user_input)
+references:
+  - "https://cwe.mitre.org/data/definitions/1336.html"
+  - "https://owasp.org/www-community/vulnerabilities/Server_Side_Template_Injection"
