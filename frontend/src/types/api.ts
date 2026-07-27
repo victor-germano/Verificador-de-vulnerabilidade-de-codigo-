@@ -12,6 +12,7 @@ export type Language =
 export type ScanStatus = "pending" | "running" | "completed" | "failed";
 export type ScanTargetType = "file" | "folder" | "project" | "git_repository";
 export type ReportFormat = "json" | "markdown" | "html" | "pdf";
+export type ProjectRole = "editor" | "viewer";
 
 export interface User {
   id: string;
@@ -30,7 +31,16 @@ export interface Project {
   id: string;
   name: string;
   description: string | null;
+  owner_id: string;
   created_at: string;
+}
+
+export interface Collaborator {
+  user_id: string;
+  email: string;
+  full_name: string;
+  role: ProjectRole;
+  added_at: string;
 }
 
 export interface Scan {

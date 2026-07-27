@@ -26,8 +26,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAuth } from "@/features/auth/auth-context";
+import { CollaboratorsCard } from "@/features/collaborators/CollaboratorsCard";
+import { useCollaborators } from "@/features/collaborators/hooks";
 import { reportDownloadUrl } from "@/features/scans/api";
-import { useProjectScans, useScanGitRepository, useUploadAndScan } from "@/features/scans/hooks";
+import {
+  useProjectScans,
+  useScanGitRepository,
+  useUploadAndScan,
+} from "@/features/scans/hooks";
 import { useProject } from "@/features/projects/hooks";
 import { cn } from "@/lib/utils";
 import type { Scan, ScanStatus } from "@/types/api";
@@ -48,7 +55,9 @@ const STATUS_CLASS: Record<ScanStatus, string> = {
 
 function notifyScanResult(scan: Scan) {
   if (scan.status === "failed") {
-    toast.error("O scan falhou", { description: scan.error_message ?? undefined });
+    toast.error("O scan falhou", {
+      description: scan.error_message ?? undefined,
+    });
     return;
   }
   toast.success("Scan concluído", {
@@ -72,7 +81,10 @@ function GitScanDialog({ projectId }: { projectId: string }) {
       setOpen(false);
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.detail ?? "Não foi possível clonar o repositório.");
+        setError(
+          err.response?.data?.detail ??
+            "Não foi possível clonar o repositório.",
+        );
       } else {
         setError("Não foi possível clonar o repositório.");
       }
@@ -90,9 +102,15 @@ function GitScanDialog({ projectId }: { projectId: string }) {
         <DialogHeader>
           <DialogTitle>Escanear repositório Git</DialogTitle>
         </DialogHeader>
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={handleSubmit}
+          noValidate
+        >
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="repository-url">URL do repositório (público, http/https)</Label>
+            <Label htmlFor="repository-url">
+              URL do repositório (público, http/https)
+            </Label>
             <Input
               id="repository-url"
               placeholder="https://github.com/org/repo.git"
@@ -103,8 +121,13 @@ function GitScanDialog({ projectId }: { projectId: string }) {
           </div>
           {error && <p className="text-xs text-destructive">{error}</p>}
           <DialogFooter>
-            <Button type="submit" disabled={scanGitRepository.isPending || !url}>
-              {scanGitRepository.isPending ? "Clonando e analisando…" : "Escanear"}
+            <Button
+              type="submit"
+              disabled={scanGitRepository.isPending || !url}
+            >
+              {scanGitRepository.isPending
+                ? "Clonando e analisando…"
+                : "Escanear"}
             </Button>
           </DialogFooter>
         </form>
@@ -116,12 +139,20 @@ function GitScanDialog({ projectId }: { projectId: string }) {
 export default function ProjectDetailPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
 
   const { data: project } = useProject(projectId);
   const { data: scans, isLoading } = useProjectScans(projectId);
+  const { data: collaborators } = useCollaborators(projectId);
   const uploadAndScan = useUploadAndScan(projectId ?? "");
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const isOwner = Boolean(project && user && project.owner_id === user.id);
+  const myRole = collaborators?.find((c) => c.user_id === user?.id)?.role;
+  const canEdit = isOwner || myRole === "editor";
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
@@ -137,24 +168,32 @@ export default function ProjectDetailPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-semibold tracking-tight">{project?.name ?? "Projeto"}</h1>
+          <h1 className="text-lg font-semibold tracking-tight">
+            {project?.name ?? "Projeto"}
+          </h1>
           <p className="text-sm text-muted-foreground">
-            {project?.description || "Envie um arquivo, pasta (.zip) ou repositório Git para analisar"}
+            {project?.description ||
+              "Envie um arquivo, pasta (.zip) ou repositório Git para analisar"}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <input
-            ref={fileInputRef}
-            type="file"
-            className="hidden"
-            accept=".py,.js,.ts,.jsx,.tsx,.java,.php,.go,.rs,.cs,.cpp,.c,.zip"
-            onChange={handleFileChange}
-          />
-          {projectId && <GitScanDialog projectId={projectId} />}
-          <Button onClick={() => fileInputRef.current?.click()} disabled={uploadAndScan.isPending}>
-            <Upload /> {uploadAndScan.isPending ? "Analisando…" : "Novo scan"}
-          </Button>
-        </div>
+        {canEdit && (
+          <div className="flex items-center gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              accept=".py,.js,.ts,.jsx,.tsx,.java,.php,.go,.rs,.cs,.cpp,.c,.zip"
+              onChange={handleFileChange}
+            />
+            {projectId && <GitScanDialog projectId={projectId} />}
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadAndScan.isPending}
+            >
+              <Upload /> {uploadAndScan.isPending ? "Analisando…" : "Novo scan"}
+            </Button>
+          </div>
+        )}
       </div>
 
       {projectId && (
@@ -162,7 +201,8 @@ export default function ProjectDetailPage() {
           to={`/findings?project_id=${projectId}`}
           className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-primary hover:underline"
         >
-          <ShieldAlert className="size-4" /> Ver todas as vulnerabilidades deste projeto
+          <ShieldAlert className="size-4" /> Ver todas as vulnerabilidades deste
+          projeto
         </Link>
       )}
 
@@ -198,7 +238,10 @@ export default function ProjectDetailPage() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className={cn("border-transparent", STATUS_CLASS[scan.status])}
+                        className={cn(
+                          "border-transparent",
+                          STATUS_CLASS[scan.status],
+                        )}
                       >
                         {STATUS_LABEL[scan.status]}
                       </Badge>
@@ -230,6 +273,8 @@ export default function ProjectDetailPage() {
           )}
         </CardContent>
       </Card>
+
+      {project && <CollaboratorsCard project={project} />}
     </div>
   );
 }

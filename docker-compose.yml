@@ -24,6 +24,8 @@ services:
       SECRET_KEY: ${SECRET_KEY:-change-me-in-production-please}
       CORS_ALLOW_ORIGINS: '["http://localhost:8080","http://localhost:5173"]'
       ENVIRONMENT: production
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-sonnet-4-5}
     ports:
       - "8000:8000"
     depends_on:

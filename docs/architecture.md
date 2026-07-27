@@ -35,7 +35,7 @@ app/
 │   ├── engines/                Scanner, Detector, Analyzer, RiskCalculator
 │   ├── rules/                    Catálogo de regras (YAML) + matchers (código)
 │   ├── reports/                    Geradores de relatório (JSON/MD/HTML/PDF)
-│   └── ai/                          Interface de análise por IA (não implementada)
+│   └── ai/                          AIAnalyzer (interface) + AnthropicAIAnalyzer + NullAIAnalyzer
 ├── security/         JWT, hashing de senha, rate limiting, security headers
 ├── workers/           Interface de fila de tarefas (execução assíncrona futura)
 ├── core/               Exceções de domínio, logging estruturado
@@ -95,15 +95,17 @@ Cada linguagem tem um adaptador que implementa o protocolo `LanguageParser`
 (`scanner/parsers/base.py`) e devolve um `ParsedFile` com:
 
 - Python: `ast.Module` nativo (`python_parser.py`).
-- JavaScript/TypeScript/Java: árvore do `tree-sitter`
-  (`javascript_parser.py`/`typescript_parser.py`/`java_parser.py`), com
-  helpers de percurso compartilhados entre as três em
+- JavaScript/TypeScript/Java/PHP/Go/Rust/C#: árvore do `tree-sitter`
+  (`javascript_parser.py`/`typescript_parser.py`/`java_parser.py`/
+  `php_parser.py`/`go_parser.py`/`rust_parser.py`/`csharp_parser.py`), com
+  helpers de percurso compartilhados entre todas em
   `scanner/rules/matchers/_ts_utils.py` (não são específicos de nenhuma
   linguagem - percorrem qualquer `tree_sitter.Tree`).
-- Demais linguagens (PHP, Go, Rust, C#): `GenericRegexParser`, que não
-  produz AST (`ast_root=None`) - apenas regras baseadas em regex rodam
-  contra esses arquivos. Ver [`adding-a-language.md`](./adding-a-language.md)
-  para como dar a uma dessas linguagens um parser AST de verdade.
+
+Todas as 8 linguagens do catálogo de upload têm parser AST dedicado -
+`GenericRegexParser` (`ast_root=None`, só regras regex) fica como a
+implementação padrão para a *próxima* linguagem adicionada sem AST ainda.
+Ver [`adding-a-language.md`](./adding-a-language.md) para o processo.
 
 ## Segurança implementada
 
@@ -120,7 +122,49 @@ Cada linguagem tem um adaptador que implementa o protocolo `LanguageParser`
 - Proteção contra zip slip na extração de uploads `.zip`.
 - Clone de repositório Git restrito a URLs `http(s)://` (sem `file://`/SSH)
   e rejeição de URLs iniciadas por `-` (argument injection no binário
-  `git`) - `utils/git_handling.py`.
+  `git`) - `utils/git_handling.py`. Repositórios privados são suportados
+  via um `access_token` opcional, validado contra um charset restrito e
+  injetado como header `Authorization` via `git -c http.extraheader=...`
+  (nunca embutido na URL) - se o clone falhar, o token é redigido
+  (`***`) antes da mensagem de erro chegar ao cliente.
+
+## IA (opcional)
+
+`scanner/ai/analyzer.py` define o protocolo `AIAnalyzer` (`explain`,
+`suggest_fix`, `summarize`). `AnthropicAIAnalyzer`
+(`scanner/ai/anthropic_analyzer.py`) é a implementação real, usando o SDK
+oficial `anthropic`. `api/deps.get_ai_analyzer()` (com `@lru_cache`) decide
+em runtime qual implementação injetar:
+
+- `ANTHROPIC_API_KEY` configurada → `AnthropicAIAnalyzer`.
+- Sem chave → `NullAIAnalyzer`, cujos métodos levantam `NotImplementedError`.
+
+`AIService` (`services/ai_service.py`) converte esse `NotImplementedError`
+em `FeatureNotConfiguredError` (HTTP 501) - os endpoints de IA
+(`api/v1/ai.py`) sempre respondem de forma previsível, mesmo sem chave
+configurada. A checagem de autorização (`_authorize_finding_access`) segue
+a mesma cadeia finding → scan → project → papel do usuário usada no resto
+da API.
+
+## Colaboração por projeto
+
+Cada `Project` tem um `owner_id` (acesso total implícito) e uma lista de
+`ProjectCollaborator` (papel `editor` ou `viewer`), sem um modelo de
+Organization/multiempresa completo - decisão deliberada para cobrir o caso
+de uso de times pequenos compartilhando projetos sem a complexidade de
+isolamento entre empresas.
+
+- `ProjectService.get_role(user_id, project)` resolve o papel efetivo do
+  usuário (`"owner"` | `ProjectRole`) e é a base de `require_editor`
+  (dono ou editor - necessário para rodar scans) e `require_owner` (só o
+  dono - necessário para apagar o projeto ou gerenciar colaboradores).
+- `ProjectRepository.list_accessible_to`/`DashboardRepository` usam uma
+  subquery `OR` (`owner_id == user OR id IN (projetos onde é colaborador)`)
+  para que a listagem de projetos e o dashboard incluam projetos
+  colaborados, não só os próprios.
+- Endpoints em `api/v1/projects.py`:
+  `GET/POST /projects/{id}/collaborators`,
+  `PATCH/DELETE /projects/{id}/collaborators/{user_id}`.
 
 ## Frontend
 
@@ -144,3 +188,9 @@ Cada linguagem tem um adaptador que implementa o protocolo `LanguageParser`
   notificações de sucesso/erro de scans e criação de projetos; a tabela de
   findings pagina no cliente (20 por página) para não renderizar centenas
   de linhas de uma vez.
+- **Colaboradores**: `features/collaborators/CollaboratorsCard.tsx` (usado
+  em `pages/ProjectDetail.tsx`) lista, adiciona, atualiza o papel e remove
+  colaboradores de um projeto. Ações de gestão só aparecem para o dono
+  (`project.owner_id === user.id`); o botão de novo scan também é ocultado
+  para quem tem papel `viewer`, refletindo no cliente a mesma regra já
+  aplicada pelo backend.

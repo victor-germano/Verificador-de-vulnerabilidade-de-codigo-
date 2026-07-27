@@ -17,29 +17,36 @@ Ver [`docs/architecture.md`](docs/architecture.md) para o desenho completo.
 
 ## Funcionalidades
 
-- **30 regras de detecção** cobrindo Injection (SQL/NoSQL/Command/Code/LDAP/
+- **38 regras de detecção** cobrindo Injection (SQL/NoSQL/Command/Code/LDAP/
   XPath/SSTI), Insecure Deserialization, XXE, SSRF, XSS (refletido e DOM),
   Path Traversal, Unsafe File Upload, Unsafe Reflection, File Inclusion,
   Resource Leak, Insecure Temporary Files, criptografia fraca, segredos
   hardcoded, cookies inseguros, open redirect e logging sensível.
-- **Análise via AST real** para Python (`ast`), JavaScript/TypeScript e Java
-  (`tree-sitter`) — não apenas regex. Demais linguagens do upload
-  (PHP/Go/Rust/C#) usam regras genéricas por regex até ganharem parser
-  dedicado (ver [`docs/adding-a-language.md`](docs/adding-a-language.md)).
+- **Análise via AST real para as 8 linguagens do catálogo** — Python
+  (`ast`), JavaScript, TypeScript, Java, PHP, Go, Rust e C# (`tree-sitter`)
+  — não regex. Adicionar uma 9ª linguagem segue o mesmo processo (ver
+  [`docs/adding-a-language.md`](docs/adding-a-language.md)).
 - **Três formas de escanear**: upload de arquivo/pasta `.zip`, repositório
-  Git público (`https://…git`) ou linha de comando (`sast-cli`).
+  Git público ou **privado** (via personal access token) ou linha de
+  comando (`sast-cli`).
 - **Security Score**, tendência histórica, top vulnerabilidades/arquivos no
   dashboard.
 - **Relatórios** em JSON, Markdown, HTML e PDF.
 - **CLI standalone** (`sast-cli`) que roda o mesmo motor sem precisar de API
   nem banco de dados — útil em pipelines de CI de outros projetos.
+- **Colaboração por projeto**: convide pessoas como editor (roda scans) ou
+  viewer (só visualiza), com o dono do projeto gerenciando quem tem acesso.
+- **IA opcional (Anthropic)**: explicação de um finding, sugestão de
+  correção e resumo de um scan em linguagem natural — desativado com
+  segurança (`501`) se nenhuma `ANTHROPIC_API_KEY` for configurada.
 
 ## Stack
 
 | Camada | Tecnologias |
 |---|---|
 | Backend | Python 3.12, FastAPI, SQLAlchemy 2 (async), Alembic, Pydantic |
-| Scanner engine | `ast` (Python), `tree-sitter` (JS/TS/Java), GitPython, regras em YAML |
+| Scanner engine | `ast` (Python), `tree-sitter` (JS/TS/Java/PHP/Go/Rust/C#), GitPython, regras em YAML |
+| IA (opcional) | SDK oficial `anthropic` (Claude) |
 | Banco | PostgreSQL |
 | Frontend | React, TypeScript, Vite, Tailwind CSS v4, Radix UI, TanStack Query, React Hook Form, Zod, Recharts |
 | Infra | Docker, Docker Compose, nginx |
@@ -70,6 +77,11 @@ docker compose up --build
 
 As migrações do Alembic rodam automaticamente no start do container do
 backend.
+
+Para habilitar os recursos de IA (explicar finding / sugerir correção /
+resumir scan), defina `ANTHROPIC_API_KEY` no `.env` antes de subir o
+compose; sem a chave, esses endpoints respondem `501` normalmente — o
+resto da aplicação funciona igual.
 
 ### Opção B — Desenvolvimento local (sem Docker)
 
@@ -102,8 +114,10 @@ http://localhost:5173.
 
 ## Banco de dados
 
-Modelo relacional: `users` → `projects` → `scans` → `findings` (ver
-`backend/app/models/`). Migrações ficam em `backend/alembic/versions/`.
+Modelo relacional: `users` → `projects` → `scans` → `findings`, com
+`project_collaborators` ligando `users` a `projects` extras (papel
+`editor`/`viewer`) além do dono (ver `backend/app/models/`). Migrações
+ficam em `backend/alembic/versions/`.
 
 ```bash
 cd backend
@@ -169,9 +183,10 @@ Padrão de commits: [Conventional Commits](https://www.conventionalcommits.org/)
 
 ## Roadmap
 
-O que já está implementado e o que é ponto de extensão preparado mas ainda
-não implementado (IA, plugins de IDE, multi-tenant, execução distribuída,
-etc.): [`docs/roadmap.md`](docs/roadmap.md).
+O que já está implementado (IA, colaboração por projeto, Git privado,
+publicação de imagens no GHCR via CI) e o que é ponto de extensão
+preparado mas ainda não implementado (plugins de IDE, execução
+distribuída, SSO/organizações, etc.): [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Licença
 

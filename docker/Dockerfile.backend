@@ -5,15 +5,18 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1
 
 # System libraries required by WeasyPrint (PDF report export): Pango/Cairo
-# for text and vector rendering, GDK-Pixbuf for embedded images.
+# for text and vector rendering, GDK-Pixbuf for embedded images. `git` is
+# required by GitPython (scanner/utils/git_handling.py) to clone repository
+# scan targets.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpango-1.0-0 \
     libpangocairo-1.0-0 \
     libcairo2 \
-    libgdk-pixbuf2.0-0 \
+    libgdk-pixbuf-2.0-0 \
     libffi8 \
     shared-mime-info \
     fonts-liberation \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
