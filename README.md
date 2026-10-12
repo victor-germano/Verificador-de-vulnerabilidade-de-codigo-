@@ -1,6 +1,6 @@
 # SAST Platform
 
-[![CI](https://github.com/vgermano1711/Verificador-de-vulnerabilidade-de-codigo-/actions/workflows/ci.yml/badge.svg)](https://github.com/vgermano1711/Verificador-de-vulnerabilidade-de-codigo-/actions/workflows/ci.yml)
+[![CI](https://github.com/victor-germano/Verificador-de-vulnerabilidade-de-codigo-/actions/workflows/ci.yml/badge.svg)](https://github.com/victor-germano/Verificador-de-vulnerabilidade-de-codigo-/actions/workflows/ci.yml)
 
 Plataforma de análise estática de código (**SAST — Static Application
 Security Testing**) para identificar vulnerabilidades de segurança em
