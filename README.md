@@ -1,11 +1,19 @@
 # SAST Platform
 
-[![CI](https://github.com/victor-germano/Verificador-de-vulnerabilidade-de-codigo-/actions/workflows/ci.yml/badge.svg)](https://github.com/victor-germano/Verificador-de-vulnerabilidade-de-codigo-/actions/workflows/ci.yml)
+[![CI](https://github.com/victor-germano/verificador-de-vulnerabilidades/actions/workflows/ci.yml/badge.svg)](https://github.com/victor-germano/verificador-de-vulnerabilidades/actions/workflows/ci.yml)
 
 Plataforma de análise estática de código (**SAST — Static Application
 Security Testing**) para identificar vulnerabilidades de segurança em
 projetos de código-fonte, com engine de regras extensível, suporte
 multi-linguagem, dashboard de risco e relatórios exportáveis.
+
+## Telas
+
+Dashboard com Security Score médio, distribuição por severidade, tendência e ranking das vulnerabilidades e dos arquivos mais afetados. Os dados abaixo vêm de scans em aplicações propositalmente vulneráveis (OWASP Juice Shop, DVWA e WebGoat) e em dois frameworks maduros (Flask e Express):
+
+![Dashboard](docs/screenshots/dashboard.png)
+
+![Projetos](docs/screenshots/projetos.png)
 
 ## Objetivo
 
